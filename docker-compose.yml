@@ -1,0 +1,35 @@
+services:
+  eve-fuel-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: eve-fuel-bot
+    restart: unless-stopped
+
+    # Load all config from .env file
+    env_file:
+      - .env
+
+    volumes:
+      # Persist the SQLite database across container restarts/rebuilds
+      - fuel-data:/app/data
+
+    # Resource limits – the bot is lightweight
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+        reservations:
+          cpus: "0.1"
+          memory: 64M
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  fuel-data:
+    driver: local
